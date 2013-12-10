@@ -1,0 +1,28 @@
+{% extends "__base.html" %}
+{% load url from future %}
+
+{% block title %}WinLiberator :: Info :: {{ db.name }}{% endblock title %}
+
+{% block page_title %}Info for {{ db.name }}{% endblock page_title%}
+
+{% block content %}
+    <h2>Tables</h2>
+    {% if tables %}
+        <div class="tables">
+            <table>
+                <thead>
+                    <tr><th>Name</th><th>Type</th><th>Remarks</th></tr>
+                </thead>
+                <tbody>
+                    {% for tbl in tables %}<tr>
+                        <td>{{ tbl.table_name }}</td>
+                        <td>{{ tbl.table_type }}</td>
+                        <td>{{ tbl.remarks }}</td>
+                    </tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No ODBC databases have been configured.</p>
+    {% endif %}
+{% endblock content %}

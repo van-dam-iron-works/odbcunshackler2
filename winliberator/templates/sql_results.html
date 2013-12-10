@@ -1,0 +1,10 @@
+{% extends "__base.html" %}
+{% load url from future %}
+
+{% block title %}WinLiberator :: SQL :: {{ db.name }}{% endblock title %}
+
+{% block page_title %}SQL Results for "{{ sql }}"{% endblock page_title%}
+
+{% block content %}
+    <p>{{ results }}</p>
+{% endblock content %}
