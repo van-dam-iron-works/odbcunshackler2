@@ -58,15 +58,32 @@ def info(request, db=None):
 
 
 def sql(request, db=None):
+    ''' Options:
+            q: SQL query string
+            c: True = Try to get the column names and return them as a list as
+                      the first record with the data
+    '''
     use_db = get_object_or_404(OdbcDatabase, name=db)
     query = request.GET.get('q')
-    if query:
+    get_c = request.GET.get('c')
+    if get_c is not None and get_c.lower() == "true":
+        get_col_names = True
+    else:
+        get_col_names = False
+    if query is not None:
         cur = get_cursor(use_db)
         if not cur:
             log.warning("Could not create cursor for {}".format(db))
             raise Http404
         log.debug("SQL ({}): {}".format(db, query))
-        res = cur.execute(query).fetchall()
+        try:
+            res = cur.execute(query).fetchall()
+        except:
+            log.warning("Could not execute query for {}: {}".format(db, query))
+            raise Http404
+        if get_col_names:
+            col_names = get_select_fields_from_query(query)
+            res.insert(0, col_names)
         return HttpResponse(json.dumps(res, cls=DjangoJSONEncoder),
                             content_type="application/json")
     else:
@@ -91,3 +108,14 @@ def get_cursor(db):
         log.error("Cursor failed.")
         conn.close()
     return cur
+
+
+def get_select_fields_from_query(query):
+    ''' Tries to find the column names in a SELECT statement
+    '''
+    select_part = query[7:query.lower().find("from")]
+    selections = select_part.split(",")
+    cleaned_selections = []
+    for sel in selections:
+        cleaned_selections.append(sel.strip(" []"))
+    return cleaned_selections
