@@ -1,12 +1,16 @@
 import logging
 log = logging.getLogger('general')
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 
+import json
 import pypyodbc
+
 
 from models import OdbcDatabase
 
@@ -63,11 +67,8 @@ def sql(request, db=None):
             raise Http404
         log.debug("SQL ({}): {}".format(db, query))
         res = cur.execute(query).fetchall()
-        return render_to_response("sql_results.html",
-                                  {'db': use_db,
-                                   'sql': query,
-                                   'results': res},
-                                  context_instance=RequestContext(request))
+        return HttpResponse(json.dumps(res, cls=DjangoJSONEncoder),
+                            content_type="application/json")
     else:
         return render_to_response("sql.html",
                                   {'db': use_db, },
