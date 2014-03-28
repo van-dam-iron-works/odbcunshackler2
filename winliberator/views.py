@@ -48,6 +48,12 @@ def info(request, db=None, table=None):
             self.remarks = column_obj[11]
 
 
+    if db is None:
+        dbs = OdbcDatabase.objects.all()
+        return render_to_response("home.html",
+                              {'dbs': dbs},
+                              context_instance=RequestContext(request))
+
     use_db = get_object_or_404(OdbcDatabase, name=db)
     cur = get_cursor(use_db)
     if not cur:

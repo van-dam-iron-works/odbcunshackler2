@@ -31,7 +31,7 @@
                     {% for tbl in tables %}<tr>
                         <td>{{ table.cat }}</td>
                         <td>{{ table.schema }}</td>
-                        <td><a href="{% url 'info' db.name tbl.table_name%}">{{ tbl.table_name }}</a></td>
+                        <td><a href="{% url 'info-columns' db.name tbl.table_name%}">{{ tbl.table_name }}</a></td>
                         <td>{{ tbl.table_type }}</td>
                         <td>{{ tbl.remarks }}</td>
                     </tr>{% endfor %}

@@ -13,7 +13,7 @@
                 </thead>
                 <tbody>
                     {% for db in dbs %}<tr>
-                        <td><a href="{% url 'info'  db.name %}">{{ db.name }}</a></td>
+                        <td><a href="{% url 'info-tables'  db.name %}">{{ db.name }}</a></td>
                         <td>{{ db.dsn }}</td>
                         <td>{{ db.notes }}</td>
                     </tr>{% endfor %}
