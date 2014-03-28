@@ -1,23 +1,77 @@
 {% extends "__base.html" %}
 {% load url from future %}
 
-{% block title %}WinLiberator :: Info :: {{ db.name }}{% endblock title %}
+{% block title %}
+    WinLiberator :: Info
+    {% if db %} :: {{ db.name }}{% endif %}
+    {% if table %} :: {{ table }}{% endif %}
+{% endblock title %}
 
-{% block page_title %}Info for {{ db.name }}{% endblock page_title%}
+{% block page_title %}
+    Info for 
+    {% if table %}{{ table }} in {% endif %}
+    {% if db %}{{ db.name }}{% endif %}
+{% endblock page_title%}
 
 {% block content %}
-    <h2>Tables</h2>
     {% if tables %}
+        <h2>Tables</h2>
         <div class="tables">
             <table>
                 <thead>
-                    <tr><th>Name</th><th>Type</th><th>Remarks</th></tr>
+                    <tr>
+                        <th>Table Cat</th>
+                        <th>Table Schema</th>
+                        <th>Table Name</th>
+                        <th>Table Type</th>
+                        <th>Remarks</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for tbl in tables %}<tr>
-                        <td>{{ tbl.table_name }}</td>
+                        <td>{{ table.cat }}</td>
+                        <td>{{ table.schema }}</td>
+                        <td><a href="{% url 'info' db.name tbl.table_name%}">{{ tbl.table_name }}</a></td>
                         <td>{{ tbl.table_type }}</td>
                         <td>{{ tbl.remarks }}</td>
+                    </tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% elif columns %}
+        <h2>Columns for {{ table }}</h2>
+        <div class="columns">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Table Cat</th>
+                        <th>Table Schema</th>
+                        <th>Table Name</th>
+                        <th>Column Name</th>
+                        <th>Data Type</th>
+                        <th>Type Name</th>
+                        <th>Column Size</th>
+                        <th>Buffer Length</th>
+                        <th>Decimal Digits</th>
+                        <th>Num Prec Radix</th>
+                        <th>Nullable</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for col in columns %}<tr>
+                        <td>{{ col.cat }}</td>
+                        <td>{{ col.schema }}</td>
+                        <td>{{ col.table_name }}</td>
+                        <td>{{ col.column_name }}</td>
+                        <td>{{ col.data_type }}</td>
+                        <td>{{ col.type_name }}</td>
+                        <td>{{ col.column_size }}</td>
+                        <td>{{ col.buffer_length }}</td>
+                        <td>{{ col.decimal_digits }}</td>
+                        <td>{{ col.num_prec_radix }}</td>
+                        <td>{{ col.nullable }}</td>
+                        <td>{{ col.remarks }}</td>
                     </tr>{% endfor %}
                 </tbody>
             </table>

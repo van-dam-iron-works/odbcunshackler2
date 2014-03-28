@@ -7,7 +7,32 @@
         <meta charset="utf-8">
         <title>{% block title %}WinLiberator{% endblock title %}</title>
         <link rel="icon" type="image/png" href="{% static 'css/images/favicon.png' %}" />
-		<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+		<style>
+		    table {
+                border-collapse: collapse;
+                margin: 0 0 1.5em 0;
+            }
+
+            thead {
+                background: rgba(0, 0, 0, 0.25);
+                font-weight: bold;
+            }
+            
+            tr:hover {
+                background: rgba(0, 0, 0, 0.1);
+            }
+            table,td,th {
+                border: 1px solid black;
+            }
+            
+            td {
+                padding: 0.125em 0.25em 0.125em 0.25em;
+            }
+            
+            th {
+                padding: 0.25em 0.5em 0.25em 0.5em;
+            }
+		</style>
         {% block style %}{% endblock style %}
         {% block javascript %}{% endblock javascript %}
     </head>

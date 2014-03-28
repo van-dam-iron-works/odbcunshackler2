@@ -65,6 +65,15 @@ def cmd_run(args=[]):
     subprocess.check_call(args)
 
 
+def cmd_collectstatic(args=[]):
+    ''' Collects the static files
+    '''
+    args.insert(0, PYTHON)
+    args.insert(1, MANAGE)
+    args.insert(2, "collectstatic")
+    subprocess.check_call(args)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='Director',
                                      description='Run a command.')

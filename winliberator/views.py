@@ -22,7 +22,7 @@ def home(request):
                               context_instance=RequestContext(request))
 
 
-def info(request, db=None):
+def info(request, db=None, table=None):
     class TableInfo():
         def __init__(self, table_obj):
             self.table_cat = table_obj[0]
@@ -31,31 +31,67 @@ def info(request, db=None):
             self.table_type = table_obj[3]
             self.remarks = table_obj[4]
 
+    
+    class ColumnInfo():
+        def __init__(self, column_obj):
+            self.table_cat = column_obj[0]
+            self.table_scehma = column_obj[1]
+            self.table_name = column_obj[2]
+            self.column_name = column_obj[3]
+            self.data_type = column_obj[4]
+            self.type_name = column_obj[5]
+            self.column_size = column_obj[6]
+            self.buffer_length = column_obj[7]
+            self.decimal_digits = column_obj[8]
+            self.num_prec_radix = column_obj[9]
+            self.nullable = column_obj[10]
+            self.remarks = column_obj[11]
+
+
     use_db = get_object_or_404(OdbcDatabase, name=db)
     cur = get_cursor(use_db)
     if not cur:
         log.warning("Could not create cursor for {}".format(db))
         raise Http404
-    # Get info about all tables in the DB
     t_meta = None
-    table_res = cur.tables()
-    if table_res:
-        tables = table_res.fetchall()
-        if tables:
-            t_meta = []
-            for tbl in tables:
-                t_meta.append(TableInfo(tbl))
+    c_meta = None
+    if table is None:
+        # Get info about all tables in the DB
+        table_res = cur.tables()
+        if table_res:
+            tables = table_res.fetchall()
+            if tables:
+                t_meta = []
+                for tbl in tables:
+                    t_meta.append(TableInfo(tbl))
+            else:
+                log.warning("Error while fetching tables from cursor.")
+                raise Http404
         else:
-            log.warning("Error while fetching tables from cursor.")
+            log.warning("Cursor error while fetching tables.")
             raise Http404
     else:
-        log.warning("Cursor error while fetching tables.")
-        raise Http404
+        # Get info about all columns in the table
+        column_res = cur.columns(table)
+        if column_res:
+            columns = column_res.fetchall()
+            if columns:
+                c_meta = []
+                for col in columns:
+                    c_meta.append(ColumnInfo(col))
+            else:
+                log.warning("Error while fetching columns from cursor.")
+                raise Http404
+        else:
+            log.warning("Cursor error while fetching columns.")
+            raise Http404
     return render_to_response("info.html",
                               {'db': use_db,
-                               'tables': t_meta},
+                               'tables': t_meta,
+                               'table': table,
+                               'columns': c_meta},
                               context_instance=RequestContext(request))
-
+        
 
 def sql(request, db=None):
     ''' Options:

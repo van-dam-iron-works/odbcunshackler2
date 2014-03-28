@@ -9,6 +9,8 @@ from .views import sql
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(ur'^info/(?P<db>[a-zA-Z_]+)/(?P<table>[0-9a-zA-Z_ -]+)/$', 
+        info, name='info'),
     url(ur'^info/(?P<db>[a-zA-Z_]+)/$', info, name='info'),
     url(ur'^sql/(?P<db>[a-zA-Z_]+)/$', cache_page(5*60)(sql), name='sql'),
     url(ur'^$', home, name='home'),
