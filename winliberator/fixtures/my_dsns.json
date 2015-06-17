@@ -1,3 +1,4 @@
 [{"pk": 1, "model": "winliberator.odbcdatabase", "fields": {"dsn": "Driver={Microsoft Access Driver (*.mdb)};DBQ=G:\\vdiw-db\\VDIWDATA.mdb", "name": "vdiw", "notes": ""}},
  {"pk": 2, "model": "winliberator.odbcdatabase", "fields": {"dsn": "DSN=FTMRP11PROJECTS", "name": "ftmrp_proj", "notes": ""}},
- {"pk": 3, "model": "winliberator.odbcdatabase", "fields": {"dsn": "DSN=FTMRP11UNIT", "name": "ftmrp_unit", "notes": ""}}]
+ {"pk": 3, "model": "winliberator.odbcdatabase", "fields": {"dsn": "DSN=FTMRP11UNIT", "name": "ftmrp_unit", "notes": ""}},
+ {"pk": 4, "model": "winliberator.odbcdatabase", "fields": {"dsn": "DSN=FabricationMySQL", "name": "fabsuite", "notes": ""}}]

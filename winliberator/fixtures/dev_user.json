@@ -1,0 +1,18 @@
+[
+  {"fields": {"username": "dev",
+              "first_name": "",
+              "last_name": "",
+              "is_active": true,
+              "is_superuser": true,
+              "is_staff": true,
+              "last_login": null,
+              "groups": [],
+              "user_permissions": [],
+              "password": "pbkdf2_sha256$20000$5N3svx3esJ9E$GzWSGR5bZEW8fbppgNWscD3UhfrcZv0cKBBT5BzpWII=",
+              "email": "dev@example.com",
+              "date_joined": "2015-06-17T15:08:06.604Z"
+             },
+   "model": "auth.user",
+   "pk": 4
+  }
+]

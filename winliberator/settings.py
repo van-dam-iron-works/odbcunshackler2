@@ -16,7 +16,7 @@ PROJECT_ROOT = os.path.dirname('__file__')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_ROOT, 'dev', 'winliberator.db'),
+        'NAME': os.path.join(PROJECT_ROOT, 'winliberator.db'),
     }
 }
 
@@ -128,7 +128,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'django_wsgiserver',
     'winliberator',
 )
 
