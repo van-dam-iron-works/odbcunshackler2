@@ -1,0 +1,14 @@
+Older windows
+
+It is likely that people will want to use this program to access ODBC databases
+on old and unsupported Windows versions. No effort has been made to make sure
+this works. However PEP-11 should get you started on backporting this to
+older versions of Python and Windows.
+
+For Win9x, WinME, NT4 you would have to backport to Python 2.5
+For Windows 2000 you would have to backport to Python 2.7 or 3.2
+For WinXP you would have to backport to Python 2.7 or 3.4
+
+Install invoke into your system Python
+pip install --user invoke
+invoke install_dev

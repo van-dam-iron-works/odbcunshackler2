@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import OdbcDatabase
+from .models import OdbcDatabase
 
 
 class OdbcDatabaseAdmin(admin.ModelAdmin):

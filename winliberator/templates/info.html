@@ -1,5 +1,4 @@
 {% extends "__base.html" %}
-{% load url from future %}
 
 {% block title %}
     WinLiberator :: Info
@@ -29,8 +28,8 @@
                 </thead>
                 <tbody>
                     {% for tbl in tables %}<tr>
-                        <td>{{ table.cat }}</td>
-                        <td>{{ table.schema }}</td>
+                        <td>{{ table.table_cat }}</td>
+                        <td>{{ table.table_schema }}</td>
                         <td><a href="{% url 'info-columns' db.name tbl.table_name%}">{{ tbl.table_name }}</a></td>
                         <td>{{ tbl.table_type }}</td>
                         <td>{{ tbl.remarks }}</td>
@@ -60,8 +59,8 @@
                 </thead>
                 <tbody>
                     {% for col in columns %}<tr>
-                        <td>{{ col.cat }}</td>
-                        <td>{{ col.schema }}</td>
+                        <td>{{ col.table_cat }}</td>
+                        <td>{{ col.table_schema }}</td>
                         <td>{{ col.table_name }}</td>
                         <td>{{ col.column_name }}</td>
                         <td>{{ col.data_type }}</td>

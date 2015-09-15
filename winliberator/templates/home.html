@@ -1,10 +1,9 @@
 {% extends "__base.html" %}
-{% load url from future %}
 
 {% block title %}WinLiberator :: Home{% endblock title %}
 
 {% block content %}
-    <h2>ODBC Connection Status</h2>
+    <h2>ODBC Connections</h2>
     {% if dbs %}
         <div class="odbc-connections">
              <table>

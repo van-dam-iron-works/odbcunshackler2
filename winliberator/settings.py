@@ -81,12 +81,12 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(PROJECT_ROOT, 'cache'),
-    }
-}
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#        'LOCATION': os.path.join(PROJECT_ROOT, 'cache'),
+#    }
+#}
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'i^y-+&tsn17er1o)0vdrx#^9c53c3)k7#&h5cxq5xd#&k5sjwz'

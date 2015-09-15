@@ -9,12 +9,12 @@ from .views import sql
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(ur'^info/(?P<db>[0-9a-zA-Z_]+)/(?P<table>[0-9a-zA-Z_ -]+)/$',
+    url(r'^info/(?P<db>[0-9a-zA-Z_]+)/(?P<table>[0-9a-zA-Z_ -]+)/$',
         info, name='info-columns'),
-    url(ur'^info/(?P<db>[0-9a-zA-Z_]+)/$', info, name='info-tables'),
-    url(ur'^info/$', info, name='info'),
-    url(ur'^sql/(?P<db>[0-9a-zA-Z_]+)/$', cache_page(5*60)(sql), name='sql'),
-    url(ur'^$', home, name='home'),
-    url(ur'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(ur'^admin/', include(admin.site.urls)),
+    url(r'^info/(?P<db>[0-9a-zA-Z_]+)/$', info, name='info-tables'),
+    url(r'^info/$', info, name='info'),
+    url(r'^sql/(?P<db>[0-9a-zA-Z_]+)/$', cache_page(5*60)(sql), name='sql'),
+    url(r'^$', home, name='home'),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/', include(admin.site.urls)),
 )

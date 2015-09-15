@@ -1,32 +1,53 @@
 #!/usr/bin/env python
 
 import argparse
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import os
 import shutil
 import subprocess
 import sys
 
 
+# Get the config and create commonly-used command paths
 config = ConfigParser()
 config.read(os.path.join('do', 'config.ini'))
+
 SYSTEM_PYTHON_PATH = config.get('Config', 'SYSTEM_PYTHON_PATH')
-SYSTEM_SCRIPTS_PATH = config.get('Config', 'SYSTEM_SCRIPTS_PATH')
-SYSTEM_PYTHON = config.get('Config', 'SYSTEM_PYTHON')
+SYSTEM_SCRIPTS_PATH = os.path.join(SYSTEM_PYTHON_PATH, 'Scripts')
+SYSTEM_PYTHON = os.path.join(SYSTEM_PYTHON_PATH, 'python')
+VIRTUALENV_CMD = os.path.join(SYSTEM_SCRIPTS_PATH, 'virtualenv.exe')
+
 PROJECT_PATH = config.get('Config', 'PROJECT_PATH')
+MANAGE = os.path.join(PROJECT_PATH, 'manage.py')
+
 VENV_PATH = config.get('Config', 'VENV_PATH')
-SCRIPTS_PATH = config.get('Config', 'SCRIPTS_PATH')
-PYTHON = config.get('Config', 'PYTHON')
-PIP = config.get('Config', 'PIP')
-MANAGE = config.get('Config', 'MANAGE')
+SCRIPTS_PATH = os.path.join(VENV_PATH, 'Scripts')
+PYTHON = os.path.join(SCRIPTS_PATH, 'python')
+PIP = os.path.join(SCRIPTS_PATH, 'pip')
+
+
+def build_cmd(cmd_seed=[], *args):
+    """
+    Builds the real command by inserting the provided *args in front of
+    command pieces in the seed
+    :param cmd_seed: Extra arguments to the command we'll insert in front of
+    :param args: Pieces of the command to insert
+    :return: command with everything in place
+    """
+    insertion_point = 0
+    for arg in args:
+        cmd_seed.insert(insertion_point, arg)
+        insertion_point += 1
+    return cmd_seed
 
 
 def cmd_python(args=[]):
     ''' Runs the virtualenv's python command with specified arguments.
         Useful for running infrequently used or one-off commands.
     '''
-    args.insert(0, PYTHON)
-    subprocess.check_call(args)
+    cmd = build_cmd(args, PYTHON)
+    subprocess.check_call(cmd)
+
 
 def cmd_install(args=[]):
     ''' Sets up a virtualenv.
@@ -35,6 +56,7 @@ def cmd_install(args=[]):
     cmd_create_virtualenv(args)
     cmd_pip(['install', '-r', 'requirements.txt'])
 
+
 def cmd_create_virtualenv(args=[]):
     ''' Destroys old virtualenv.
         Creates new virtualenv.
@@ -42,23 +64,35 @@ def cmd_create_virtualenv(args=[]):
     print("Removing old venv.")
     shutil.rmtree(VENV_PATH, ignore_errors=True)
     print("Creating new venv.")
-    venv_exe = os.path.join(SYSTEM_SCRIPTS_PATH, "virtualenv.exe")
-    if not os.path.isfile(venv_exe):
-        print("*** Error: You need to install virtualenv into your system Python. ***")
-        print("Try doing the following with administrator rights: ")
-        print("$ cd {}".format(SYSTEM_SCRIPTS_PATH))
-        print("$ pip install --upgrade pip")
-        print("$ pip install virtualenv")
+    if not os.path.isfile(VIRTUALENV_CMD):
+        print("*** Error:",
+              "You need to install virtualenv into your system Python. ***")
+        print("Try doing the following. You may need administrator rights: ")
+        print("cd {}".format(SYSTEM_SCRIPTS_PATH))
+        print("pip install --upgrade pip")
+        print("pip install virtualenv")
         sys.exit(1)
-    subprocess.check_call([venv_exe,
-                           VENV_PATH, ],
-                          shell=True)
+    cmd = build_cmd(args, VIRTUALENV_CMD, VENV_PATH)
+    subprocess.check_call(cmd, shell=True)
+
 
 def cmd_pip(args=[]):
     ''' Runs the virtualenv's pip command with specified arguments.
     '''
-    args.insert(0, PIP)
-    subprocess.check_call(args)
+    cmd = build_cmd(args, PIP)
+    subprocess.check_call(cmd)
+
+
+def cmd_flake8(args=[]):
+    ''' Runs the flake8 checker
+    '''
+    cmd = build_cmd(args,
+                    os.path.join(SCRIPTS_PATH, 'flake8'),
+                    '--max-complexity=12',
+                    '--exclude=migrations,static',
+                    PROJECT_PATH)
+    subprocess.call(cmd)
+
 
 # Custom settings and commands start here
 def cmd_build_dev(args=[]):
@@ -67,48 +101,41 @@ def cmd_build_dev(args=[]):
     cmd_migrate()
     cmd_load_dev_fixtures()
 
+
 def cmd_flush_db(args=[]):
     ''' Flushes the Django database
     '''
-    args.insert(0, PYTHON)
-    args.insert(1, MANAGE)
-    args.insert(2, "flush")
-    args.insert(3, "--noinput")
-    subprocess.check_call(args)
+    cmd = build_cmd(args, PYTHON, MANAGE, "flush", "--noinput")
+    print(cmd)
+    subprocess.check_call(cmd)
+
 
 def cmd_collectstatic(args=[]):
     ''' Collects the static files
     '''
-    args.insert(0, PYTHON)
-    args.insert(1, MANAGE)
-    args.insert(2, "collectstatic")
-    subprocess.check_call(args)
+    cmd = build_cmd(args, PYTHON, MANAGE, "collectstatic")
+    subprocess.check_call(cmd)
+
 
 def cmd_load_dev_fixtures(args=[]):
-    '''  Loads winliberator/fixtures/my_dsns.json into database
+    '''  Loads winliberator/fixtures/ into database
     '''
-    args.insert(0, PYTHON)
-    args.insert(1, MANAGE)
-    args.insert(2, "loaddata")
-    args.insert(3, "dev_user")
-    args.insert(4, "my_dsns")
-    subprocess.check_call(args)
+    cmd = build_cmd(args, PYTHON, MANAGE, "loaddata", "dev_user", "my_dsns")
+    subprocess.check_call(cmd)
+
 
 def cmd_migrate(args=[]):
     ''' Runs Django migrations
     '''
-    args.insert(0, PYTHON)
-    args.insert(1, MANAGE)
-    args.insert(2, "migrate")
-    subprocess.check_call(args)
+    cmd = build_cmd(args, PYTHON, MANAGE, "migrate")
+    subprocess.check_call(cmd)
 
-def cmd_run_dev(args=[]):
-    ''' Runs the server
+
+def cmd_run(args=[]):
+    ''' Runs the server in development mode (default)
     '''
-    args.insert(0, PYTHON)
-    args.insert(1, MANAGE)
-    args.insert(2, "runserver")
-    subprocess.check_call(args)
+    cmd = build_cmd(args, PYTHON, MANAGE, "runserver")
+    subprocess.check_call(cmd)
 
 
 if __name__ == '__main__':

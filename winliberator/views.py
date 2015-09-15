@@ -12,7 +12,32 @@ import json
 import pypyodbc
 
 
-from models import OdbcDatabase
+from .models import OdbcDatabase
+
+
+class TableInfo():
+    def __init__(self, table_obj):
+        self.table_cat = table_obj[0]
+        self.table_schema = table_obj[1]
+        self.table_name = table_obj[2]
+        self.table_type = table_obj[3]
+        self.remarks = table_obj[4]
+
+
+class ColumnInfo():
+    def __init__(self, column_obj):
+        self.table_cat = column_obj[0]
+        self.table_schema = column_obj[1]
+        self.table_name = column_obj[2]
+        self.column_name = column_obj[3]
+        self.data_type = column_obj[4]
+        self.type_name = column_obj[5]
+        self.column_size = column_obj[6]
+        self.buffer_length = column_obj[7]
+        self.decimal_digits = column_obj[8]
+        self.num_prec_radix = column_obj[9]
+        self.nullable = column_obj[10]
+        self.remarks = column_obj[11]
 
 
 def home(request):
@@ -23,30 +48,6 @@ def home(request):
 
 
 def info(request, db=None, table=None):
-    class TableInfo():
-        def __init__(self, table_obj):
-            self.table_cat = table_obj[0]
-            self.table_scehma = table_obj[1]
-            self.table_name = table_obj[2]
-            self.table_type = table_obj[3]
-            self.remarks = table_obj[4]
-
-    
-    class ColumnInfo():
-        def __init__(self, column_obj):
-            self.table_cat = column_obj[0]
-            self.table_scehma = column_obj[1]
-            self.table_name = column_obj[2]
-            self.column_name = column_obj[3]
-            self.data_type = column_obj[4]
-            self.type_name = column_obj[5]
-            self.column_size = column_obj[6]
-            self.buffer_length = column_obj[7]
-            self.decimal_digits = column_obj[8]
-            self.num_prec_radix = column_obj[9]
-            self.nullable = column_obj[10]
-            self.remarks = column_obj[11]
-
 
     if db is None:
         dbs = OdbcDatabase.objects.all()
@@ -62,35 +63,9 @@ def info(request, db=None, table=None):
     t_meta = None
     c_meta = None
     if table is None:
-        # Get info about all tables in the DB
-        table_res = cur.tables()
-        if table_res:
-            tables = table_res.fetchall()
-            if tables:
-                t_meta = []
-                for tbl in tables:
-                    t_meta.append(TableInfo(tbl))
-            else:
-                log.warning("Error while fetching tables from cursor.")
-                raise Http404
-        else:
-            log.warning("Cursor error while fetching tables.")
-            raise Http404
+        t_meta = get_table_info(cur)
     else:
-        # Get info about all columns in the table
-        column_res = cur.columns(table)
-        if column_res:
-            columns = column_res.fetchall()
-            if columns:
-                c_meta = []
-                for col in columns:
-                    c_meta.append(ColumnInfo(col))
-            else:
-                log.warning("Error while fetching columns from cursor.")
-                raise Http404
-        else:
-            log.warning("Cursor error while fetching columns.")
-            raise Http404
+        c_meta = get_column_info(cur, table)
     return render_to_response("info.html",
                               {'db': use_db,
                                'tables': t_meta,
@@ -107,11 +82,7 @@ def sql(request, db=None):
     '''
     use_db = get_object_or_404(OdbcDatabase, name=db)
     query = request.GET.get('q')
-    get_c = request.GET.get('c')
-    if get_c is not None and get_c.lower() == "true":
-        get_col_names = True
-    else:
-        get_col_names = False
+    results = {}
     if query is not None:
         cur = get_cursor(use_db)
         if not cur:
@@ -123,10 +94,9 @@ def sql(request, db=None):
         except:
             log.warning("Could not execute query for {}: {}".format(db, query))
             raise Http404
-        if get_col_names:
-            col_names = get_select_fields_from_query(query)
-            res.insert(0, col_names)
-        return HttpResponse(json.dumps(res, cls=DjangoJSONEncoder),
+        results['columns'] = get_select_fields_from_query(use_db, query)
+        results['rows'] = res
+        return HttpResponse(json.dumps(results, cls=DjangoJSONEncoder),
                             content_type="application/json")
     else:
         return render_to_response("sql.html",
@@ -152,12 +122,50 @@ def get_cursor(db):
     return cur
 
 
-def get_select_fields_from_query(query):
-    ''' Tries to find the column names in a SELECT statement
-    '''
-    select_part = query[7:query.lower().find("from")]
-    selections = select_part.split(",")
-    cleaned_selections = []
-    for sel in selections:
-        cleaned_selections.append(sel.strip(" []"))
-    return cleaned_selections
+def get_table_info(cur):
+    table_res = cur.tables()
+    if table_res:
+        tables = table_res.fetchall()
+        if tables:
+            t_meta = []
+            for tbl in tables:
+                t_meta.append(TableInfo(tbl))
+        else:
+            log.warning("Error while fetching tables from cursor.")
+            raise Http404
+    else:
+        log.warning("Cursor error while fetching tables.")
+        raise Http404
+    return t_meta
+
+
+def get_column_info(cur, use_table):
+    # Get info about all columns in the table
+    column_res = cur.columns(use_table)
+    if column_res:
+        columns = column_res.fetchall()
+        if columns:
+            c_meta = []
+            for col in columns:
+                c_meta.append(ColumnInfo(col))
+        else:
+            log.warning("Error while fetching columns from cursor.")
+            raise Http404
+    else:
+        log.warning("Cursor error while fetching columns.")
+        raise Http404
+    return c_meta
+
+
+def get_select_fields_from_query(cur, query):
+    """ Tries to find the column names in a SELECT statement
+        TODO: If column name = *, query for the list of columns in the table
+    """
+    from_pos = query.lower().find("from")
+    select_columns = query[len("select"):from_pos]
+    columns = select_columns.split(",")
+    cleaned_columns = []
+    for sel in columns:
+        stripped = sel.strip(" []")
+        cleaned_columns.append(stripped)
+    return cleaned_columns
