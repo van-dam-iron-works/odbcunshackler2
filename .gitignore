@@ -5,3 +5,5 @@ dev
 *.komodoproject
 venv
 winliberator.db
+*~
+*.swp

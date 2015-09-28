@@ -42,25 +42,25 @@ def build_cmd(cmd_seed=[], *args):
 
 
 def cmd_python(args=[]):
-    ''' Runs the virtualenv's python command with specified arguments.
+    """ Runs the virtualenv's python command with specified arguments.
         Useful for running infrequently used or one-off commands.
-    '''
+    """
     cmd = build_cmd(args, PYTHON)
     subprocess.check_call(cmd)
 
 
 def cmd_install(args=[]):
-    ''' Sets up a virtualenv.
+    """ Sets up a virtualenv.
         Installs packages from requirements.txt.
-    '''
+    """
     cmd_create_virtualenv(args)
     cmd_pip(['install', '-r', 'requirements.txt'])
 
 
 def cmd_create_virtualenv(args=[]):
-    ''' Destroys old virtualenv.
+    """ Destroys old virtualenv.
         Creates new virtualenv.
-    '''
+    """
     print("Removing old venv.")
     shutil.rmtree(VENV_PATH, ignore_errors=True)
     print("Creating new venv.")
@@ -77,15 +77,15 @@ def cmd_create_virtualenv(args=[]):
 
 
 def cmd_pip(args=[]):
-    ''' Runs the virtualenv's pip command with specified arguments.
-    '''
+    """ Runs the virtualenv's pip command with specified arguments.
+    """
     cmd = build_cmd(args, PIP)
     subprocess.check_call(cmd)
 
 
 def cmd_flake8(args=[]):
-    ''' Runs the flake8 checker
-    '''
+    """ Runs the flake8 checker
+    """
     cmd = build_cmd(args,
                     os.path.join(SCRIPTS_PATH, 'flake8'),
                     '--max-complexity=12',
@@ -103,38 +103,45 @@ def cmd_build_dev(args=[]):
 
 
 def cmd_flush_db(args=[]):
-    ''' Flushes the Django database
-    '''
+    """ Flushes the Django database
+    """
     cmd = build_cmd(args, PYTHON, MANAGE, "flush", "--noinput")
     print(cmd)
     subprocess.check_call(cmd)
 
 
 def cmd_collectstatic(args=[]):
-    ''' Collects the static files
-    '''
+    """ Collects the static files
+    """
     cmd = build_cmd(args, PYTHON, MANAGE, "collectstatic")
     subprocess.check_call(cmd)
 
 
 def cmd_load_dev_fixtures(args=[]):
-    '''  Loads winliberator/fixtures/ into database
-    '''
+    """  Loads winliberator/fixtures/ into database
+    """
     cmd = build_cmd(args, PYTHON, MANAGE, "loaddata", "dev_user", "my_dsns")
     subprocess.check_call(cmd)
 
 
 def cmd_migrate(args=[]):
-    ''' Runs Django migrations
-    '''
+    """ Runs Django migrations
+    """
     cmd = build_cmd(args, PYTHON, MANAGE, "migrate")
     subprocess.check_call(cmd)
 
 
 def cmd_run(args=[]):
-    ''' Runs the server in development mode (default)
-    '''
+    """ Runs the server in development mode (default)
+    """
     cmd = build_cmd(args, PYTHON, MANAGE, "runserver")
+    subprocess.check_call(cmd)
+
+def cmd_run_prod(args=[]):
+    """ Runs the server in production mode
+    """
+    waitress_serve = os.path.join(SCRIPTS_PATH, 'waitress-serve')
+    cmd = build_cmd(args, waitress_serve, "--port=80", "winliberator.wsgi:application")
     subprocess.check_call(cmd)
 
 
