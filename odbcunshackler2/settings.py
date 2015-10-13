@@ -16,7 +16,7 @@ PROJECT_ROOT = os.path.dirname('__file__')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_ROOT, 'winliberator.db'),
+        'NAME': os.path.join(PROJECT_ROOT, 'odbcunshackler2.db'),
     }
 }
 
@@ -108,10 +108,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'winliberator.urls'
+ROOT_URLCONF = 'odbcunshackler2.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'winliberator.wsgi.application'
+WSGI_APPLICATION = 'odbcunshackler2.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -128,7 +128,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'winliberator',
+    'odbcunshackler2',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

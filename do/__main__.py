@@ -118,7 +118,7 @@ def cmd_collectstatic(args=[]):
 
 
 def cmd_load_dev_fixtures(args=[]):
-    """  Loads winliberator/fixtures/ into database
+    """  Loads odbcunshackler2/fixtures/ into database
     """
     cmd = build_cmd(args, PYTHON, MANAGE, "loaddata", "dev_user", "my_dsns")
     subprocess.check_call(cmd)
@@ -141,7 +141,7 @@ def cmd_run_prod(args=[]):
     """ Runs the server in production mode
     """
     waitress_serve = os.path.join(SCRIPTS_PATH, 'waitress-serve')
-    cmd = build_cmd(args, waitress_serve, "--port=80", "winliberator.wsgi:application")
+    cmd = build_cmd(args, waitress_serve, "--port=80", "odbcunshackler2.wsgi:application")
     subprocess.check_call(cmd)
 
 

@@ -4,6 +4,6 @@ cache
 dev
 *.komodoproject
 venv
-winliberator.db
+odbcunshackler2.db
 *~
 *.swp

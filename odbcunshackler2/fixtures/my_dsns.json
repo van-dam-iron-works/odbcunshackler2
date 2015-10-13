@@ -1,0 +1,4 @@
+[{"pk": 1, "model": "odbcunshackler2.odbcdatabase", "fields": {"dsn": "Driver={Microsoft Access Driver (*.mdb)};DBQ=G:\\vdiw-db\\VDIWDATA.mdb", "name": "vdiw", "notes": ""}},
+ {"pk": 2, "model": "odbcunshackler2.odbcdatabase", "fields": {"dsn": "DSN=FTMRP11PROJECTS", "name": "ftmrp_proj", "notes": ""}},
+ {"pk": 3, "model": "odbcunshackler2.odbcdatabase", "fields": {"dsn": "DSN=FTMRP11UPF", "name": "ftmrp_unit", "notes": ""}},
+ {"pk": 4, "model": "odbcunshackler2.odbcdatabase", "fields": {"dsn": "DSN=FabricationMySQL", "name": "fabsuite", "notes": ""}}]
