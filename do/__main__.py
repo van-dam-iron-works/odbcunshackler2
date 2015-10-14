@@ -140,8 +140,7 @@ def cmd_run(args=[]):
 def cmd_run_prod(args=[]):
     """ Runs the server in production mode
     """
-    waitress_serve = os.path.join(SCRIPTS_PATH, 'waitress-serve')
-    cmd = build_cmd(args, waitress_serve, "--port=80", "odbcunshackler2.wsgi:application")
+    cmd = build_cmd(args, PYTHON, MANAGE, "runserver", "0.0.0.0:80")
     subprocess.check_call(cmd)
 
 
